@@ -93,6 +93,8 @@ Prioridade: baixa
 
 Ao comparar o original com o `tutorialSolid.md`, encontrei diferenças que preciso decidir:
 
-- **Pontuação dos passageiros:** no original, Professor vale 10, Engenheiro 15 e Astronauta 20. O tutorial diz 15, 20 e 10. Vou manter os valores do original para preservar o comportamento, e registrar isso na revisão.
-- **Formato do ranking:** o original grava JSON. O código de referência do tutorial grava linhas separadas por `|`. Ainda preciso decidir qual usar.
+- **Pontuação dos passageiros:** no original, Professor vale 10, Engenheiro 15 e Astronauta 20. O tutorial diz 15, 20 e 10. Decidi seguir o tutorial (15, 20 e 10), porque ele é a referência da atividade. Isso é uma mudança intencional de comportamento e será registrada na revisão.
+- **Formato do ranking:** o original grava JSON. O código de referência do tutorial grava linhas separadas por `|`. Ainda preciso decidir qual usar (decisão da etapa `repository`).
 - **Sorteio e capacidade:** o tutorial pede posições em todo o mapa, nave com capacidade para todos os passageiros e contagem a bordo, restantes e total. Vou registrar como mudanças intencionais.
+- **Movimento dos inimigos:** no original, o inimigo sorteava uma das 4 direções (sem diagonal e sem ficar parado). Na versão refatorada, `Missao.moverInimigos` sorteia `dx` e `dy` entre -1 e 1, então o inimigo pode andar na diagonal ou ficar parado. Mantive assim e registro como mudança intencional.
+- **Regras nas entidades:** `colideCom` saiu de `Asteroide` e `Inimigo` e a colisão ficou centralizada em `Missao`. `Dificuldade` mantém `toString()` (Fácil, Médio, Difícil) e o aceite de entradas com acento, como no original.

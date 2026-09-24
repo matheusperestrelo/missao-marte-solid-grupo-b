@@ -1,154 +1,96 @@
-# Revisão final da atividade
+# Revisão SOLID — Missão Marte
 
-**Nome:** João Gabriel Rocha Cavalcante
-**Data:** 24/09/2026
+## 1. Observação sobre cada princípio SOLID
 
-## Como validei a solução
+### S — Single Responsibility Principle (SRP)
+A refatoração separou responsabilidades que antes estavam concentradas em poucas classes. O `JogoService` ficou responsável pela lógica do jogo, enquanto o `MapaRenderer` ficou responsável pela apresentação e o `RankingRepository` pela persistência do ranking. Isso facilita a manutenção, pois uma alteração em uma responsabilidade tende a afetar menos partes do sistema.
 
-Foram realizados testes na versão inicial e na versão refatorada do projeto, verificando a compilação e o funcionamento do jogo.
+### O — Open/Closed Principle (OCP)
+A utilização de abstrações e interfaces facilita a inclusão de novos comportamentos sem precisar modificar diretamente todas as classes existentes. Por exemplo, novos tipos de passageiros podem ser criados a partir de `Passageiro`, mantendo a estrutura principal do jogo.
 
-* [x] compilação do código inicial;
-* [x] compilação da versão refatorada;
-* [x] início de uma missão;
-* [x] movimentação, embarque e conclusão da missão;
-* [x] consulta e reset do ranking;
-* [x] teste do menu principal e encerramento do jogo.
+### L — Liskov Substitution Principle (LSP)
+As subclasses de `Passageiro`, como `Professor`, `Engenheiro` e `Astronauta`, podem ser utilizadas onde um `Passageiro` é esperado, mantendo o comportamento definido pela abstração. Isso permite que a missão trabalhe com diferentes tipos de passageiros por meio da mesma referência.
 
-### Comandos utilizados
+### I — Interface Segregation Principle (ISP)
+As interfaces `Posicionavel` e `Movel` possuem responsabilidades pequenas e específicas. Uma classe não precisa implementar métodos que não estejam relacionados à sua função. Isso deixa as interfaces mais simples e reduz dependências desnecessárias.
 
-Para compilar a versão refatorada:
-
-```powershell
-Remove-Item -Recurse -Force out -ErrorAction SilentlyContinue
-New-Item -ItemType Directory -Force -Path out | Out-Null
-javac -d out (Get-ChildItem -Recurse -Filter *.java -Path src/solidexercicio10 | ForEach-Object FullName)
-```
-
-Para executar:
-
-```powershell
-java -cp out solidexercicio10.Main
-```
-
-Durante os testes, foram verificadas as principais funcionalidades da aplicação, incluindo o início de uma missão, movimentação da nave, embarque dos passageiros, conclusão da missão e funcionamento do ranking.
-
-Também foi identificado e corrigido um problema na representação visual da movimentação vertical. O problema estava na ordem de impressão das linhas do mapa no `MapaRenderer`, fazendo com que os comandos `w` e `s` parecessem invertidos. A renderização foi ajustada para apresentar o eixo Y de forma compatível com a movimentação esperada.
+### D — Dependency Inversion Principle (DIP)
+O `JogoService` recebe uma dependência do tipo `RankingRepository`, em vez de depender diretamente da implementação `RankingService`. Dessa forma, a lógica do jogo depende de uma abstração, permitindo trocar a forma de armazenamento do ranking com menos alterações no restante do sistema.
 
 ---
 
-## Achados da revisão
+## 2. Melhoria adicional
 
-### Ponto 1
+Uma melhoria adicional seria separar ainda mais a lógica de entrada do usuário da classe `JogoService`.
 
-```text
-Local: JogoService, MapaRenderer e RankingRepository
-Princípio relacionado: Single Responsibility Principle (SRP)
-Observação: As responsabilidades do sistema foram separadas entre classes diferentes. O JogoService concentra o fluxo da partida, o MapaRenderer é responsável pela apresentação do mapa e o RankingRepository trata do armazenamento e consulta do ranking.
-Impacto: A separação facilita a manutenção e evita que uma única classe fique responsável por muitas tarefas diferentes.
-Proposta: Manter a separação atual e, futuramente, separar também o tratamento dos comandos de entrada do jogador.
-Prioridade: Média
-```
+Atualmente, o `JogoService` coordena a execução do jogo e utiliza o `Scanner` recebido pelo `Main`. Em uma próxima evolução, poderia ser criada uma classe ou interface específica para entrada do usuário. Assim, seria possível trocar o `Scanner` por outra forma de entrada, como uma interface gráfica, sem alterar a lógica principal da missão.
 
-### Ponto 2
-
-```text
-Local: Passageiro, Professor, Engenheiro e Astronauta
-Princípio relacionado: Open/Closed Principle (OCP)
-Observação: A classe Passageiro funciona como uma abstração para os diferentes tipos de passageiros. Novos tipos podem ser adicionados criando novas subclasses sem precisar alterar toda a estrutura existente.
-Impacto: A estrutura fica mais preparada para receber novos tipos de passageiros e novas regras.
-Proposta: Manter a utilização da classe abstrata Passageiro para representar os diferentes tipos.
-Prioridade: Média
-```
-
-### Ponto 3
-
-```text
-Local: Professor, Engenheiro e Astronauta
-Princípio relacionado: Liskov Substitution Principle (LSP)
-Observação: As subclasses de Passageiro possuem as características esperadas de um Passageiro e podem ser utilizadas onde um Passageiro é esperado.
-Impacto: O código pode trabalhar com uma lista de Passageiro sem precisar tratar cada tipo separadamente em todas as situações.
-Proposta: Manter a estrutura de herança utilizada na refatoração.
-Prioridade: Baixa
-```
-
-### Ponto 4
-
-```text
-Local: Posicionavel e Movel
-Princípio relacionado: Interface Segregation Principle (ISP)
-Observação: Foram criadas interfaces pequenas e específicas. Posicionavel representa objetos que possuem posição e Movel representa objetos que podem se movimentar.
-Impacto: As classes não precisam implementar métodos que não utilizam, reduzindo o acoplamento.
-Proposta: Continuar utilizando interfaces específicas quando novas funcionalidades forem adicionadas.
-Prioridade: Baixa
-```
-
-### Ponto 5
-
-```text
-Local: JogoService e RankingRepository
-Princípio relacionado: Dependency Inversion Principle (DIP)
-Observação: O JogoService recebe um RankingRepository em vez de depender diretamente da implementação concreta RankingService.
-Impacto: Isso permite trocar a implementação do ranking sem precisar alterar a lógica principal do jogo.
-Proposta: Aplicar o mesmo princípio futuramente em outras partes que possam precisar de diferentes implementações.
-Prioridade: Média
-```
+Outra melhoria futura seria criar testes automatizados para as regras principais, como embarque de passageiros, perda de vidas, colisões e cálculo da pontuação.
 
 ---
 
-## Decisões com as quais concordo
+## 3. Decisão do tutorial com a qual a equipe concorda
 
-Concordo com a decisão de separar a lógica do jogo da parte responsável pela apresentação.
+A equipe concorda com a separação entre a lógica do jogo e a apresentação.
 
-A utilização do `MapaRenderer` para cuidar da exibição do mapa evita que a lógica principal da missão fique misturada com comandos de impressão no console.
-
-Essa separação facilita futuras alterações na apresentação do sistema. Por exemplo, seria possível criar uma nova forma de apresentação, como uma interface gráfica, sem precisar modificar todas as regras da missão.
-
-Também facilita a manutenção, pois cada parte do sistema possui uma responsabilidade mais específica.
+A criação do `MapaRenderer` como responsável por desenhar o mapa deixa o `JogoService` concentrado na coordenação das regras da missão. Essa separação facilita uma futura mudança da apresentação do console para uma interface gráfica, pois a lógica principal do jogo não precisa ser completamente reescrita.
 
 ---
 
-## Decisões com as quais não concordo
+## 4. Decisão do tutorial com a qual a equipe discorda
 
-Uma alteração que eu faria seria separar o tratamento dos comandos de entrada do jogador do `JogoService`.
+A equipe discorda da ideia de que a estrutura apresentada no tutorial seja necessariamente a solução definitiva para o projeto.
 
-Atualmente, o `JogoService` participa do fluxo de leitura e tratamento dos comandos do usuário. Para uma aplicação maior, seria interessante criar uma classe específica para receber e interpretar os comandos.
+A divisão em `model`, `repository`, `presentation` e `service` melhora bastante a organização, mas ainda existe espaço para reduzir o acoplamento e separar melhor algumas responsabilidades. Por exemplo, em uma próxima iteração, a entrada do usuário poderia ficar em uma camada própria, evitando que a lógica do jogo fique responsável por coordenar tanto regras quanto interação com o usuário.
 
-Isso deixaria o `JogoService` mais concentrado nas regras e no fluxo da missão, facilitando testes automatizados e futuras mudanças na forma de entrada.
-
-Por exemplo, futuramente os comandos poderiam vir de uma interface gráfica em vez do teclado, sem precisar modificar diretamente a lógica da missão.
+A discordância, portanto, não é sobre a separação proposta ser inadequada, mas sobre considerá-la como a estrutura final. Para a equipe, ela é uma boa base para novas melhorias.
 
 ---
 
-## Melhoria implementada
+## 5. Testes realizados e resultados
 
-Durante os testes foi identificado um problema na movimentação vertical da nave.
+Foram realizados os seguintes testes após a refatoração:
 
-Os comandos `w` e `s` estavam funcionando de acordo com a alteração da coordenada Y, porém a forma como o `MapaRenderer` imprimia as linhas fazia com que a movimentação parecesse visualmente invertida no terminal.
+| Teste | Resultado |
+|---|---|
+| Compilação dos arquivos Java do pacote `solidexercicio10` | OK |
+| Execução da classe `solidexercicio10.Main` | OK |
+| Abertura e navegação pelo menu | OK |
+| Execução de uma missão | OK |
+| Movimentação durante a missão | OK |
+| Embarque de passageiros | OK |
+| Funcionamento das regras da missão | OK |
+| Ranking | OK |
+| Reset do ranking | OK |
+| Encerramento do programa | OK |
 
-A alteração realizada foi na ordem de impressão do eixo Y.
+Com os testes realizados, o projeto foi executado normalmente após a refatoração.
 
-Antes:
+---
 
-```java
-for (int y = minY; y <= maxY; y++) {
-```
+## 6. Prioridade das melhorias
 
-Depois:
+As melhorias foram organizadas da seguinte forma:
 
-```java
-for (int y = maxY; y >= minY; y--) {
-```
+1. **Alta prioridade — Criar testes automatizados**
+      - Permitir verificar automaticamente as principais regras do jogo.
+      - Reduzir o risco de alterações futuras quebrarem funcionalidades existentes.
 
-Com isso, a representação do mapa passou a ficar compatível com a movimentação esperada pelo jogador.
+2. **Média prioridade — Separar a entrada do usuário**
+      - Criar uma abstração para entrada de dados.
+      - Facilitar uma futura troca do console por interface gráfica.
 
-Essa alteração não modificou a regra de movimentação da nave. Ela corrigiu apenas a forma como a posição era apresentada no terminal, mantendo a lógica do jogo separada da apresentação.
+3. **Média prioridade — Reduzir ainda mais o acoplamento do renderer**
+      - Fazer o `MapaRenderer` receber somente os dados necessários para desenhar.
+      - Evitar que a apresentação tenha acesso desnecessário à lógica da missão.
+
+4. **Baixa prioridade — Evoluir a persistência do ranking**
+      - Permitir futuramente trocar o armazenamento em arquivo por banco de dados ou outro mecanismo sem alterar a lógica principal do jogo.
 
 ---
 
 ## Conclusão
 
-A refatoração melhorou a organização do projeto ao separar responsabilidades e aplicar os princípios SOLID.
+A refatoração tornou o projeto mais organizado ao separar responsabilidades entre modelo, persistência, apresentação e serviço. Os princípios SOLID ajudaram a reduzir o acoplamento e facilitaram futuras alterações.
 
-A estrutura atual facilita a manutenção do código e permite futuras alterações, principalmente na apresentação, no ranking e na inclusão de novos tipos de entidades.
-
-Como melhorias futuras, seria interessante implementar testes automatizados e separar o tratamento da entrada do usuário da lógica principal do jogo.
+A equipe considera que a estrutura atual atende ao objetivo da atividade, mas reconhece que ainda existem melhorias possíveis, principalmente na criação de testes automatizados e na separação da entrada do usuário.

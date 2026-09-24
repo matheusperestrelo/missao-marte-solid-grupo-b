@@ -20,7 +20,7 @@ public class Nave extends EntidadeMapa implements Movel {
   public String getSimbolo() { return "@"; }
   public void moverComLimites(char c, int minX, int maxX, int minY, int maxY) {
     int dx = 0, dy = 0;
-    switch (c) { case 'w' -> dy = -1; case 's' -> dy = 1; case 'a' -> dx = -1; case 'd' -> dx = 1; default -> { } }
+    switch (c) { case 'w' -> dy = 1; case 's' -> dy = -1; case 'a' -> dx = -1; case 'd' -> dx = 1; default -> { } }
     int novoX = x + dx, novoY = y + dy;
     if (novoX >= minX && novoX <= maxX && novoY >= minY && novoY <= maxY) { x = novoX; y = novoY; }
   }

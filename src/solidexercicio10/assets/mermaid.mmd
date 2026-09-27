@@ -1,0 +1,167 @@
+classDiagram
+
+%%BAIXAR PLUGIN
+
+%% =========================
+%% INTERFACES
+%% =========================
+
+    class Posicionavel {
+        <<interface>>
+    }
+
+    class Movel {
+        <<interface>>
+    }
+
+
+%% =========================
+%% CLASSES PRINCIPAIS
+%% =========================
+
+    class EntidadeMapa {
+        <<abstract>>
+        -int x
+        -int y
+    }
+
+    class Passageiro {
+        <<abstract>>
+        -String nome
+        -String tipo
+    }
+
+    class Professor {
+    }
+
+    class Engenheiro {
+    }
+
+    class Astronauta {
+    }
+
+    class Nave {
+        -String nome
+        -int capacidade
+        -int vidas
+    }
+
+    class Asteroide {
+    }
+
+    class Inimigo {
+    }
+
+
+%% =========================
+%% MISSÃO
+%% =========================
+
+    class Missao {
+        -Nave nave
+        -List~Passageiro~ passageiros
+        -List~Asteroide~ asteroides
+        -List~Inimigo~ inimigos
+    }
+
+
+%% =========================
+%% RANKING
+%% =========================
+
+    class Dificuldade {
+        <<enumeration>>
+        FACIL
+        MEDIO
+        DIFICIL
+    }
+
+    class RankingEntry {
+        +String name
+        +int score
+        +Dificuldade dificuldade
+        +int passageirosColetados
+        +String dataHora
+        +long tempoJogo
+    }
+
+    class RankingRepository {
+        <<interface>>
+    }
+
+    class RankingService {
+        -Path arquivo
+    }
+
+
+%% =========================
+%% SERVIÇOS
+%% =========================
+
+    class JogoService {
+        -RankingRepository ranking
+        -MapaRenderer renderer
+    }
+
+    class MapaRenderer {
+    }
+
+    class Main {
+    }
+
+
+%% =========================
+%% HERANÇA
+%% =========================
+
+    EntidadeMapa <|-- Passageiro
+    Passageiro <|-- Professor
+    Passageiro <|-- Engenheiro
+    Passageiro <|-- Astronauta
+
+    EntidadeMapa <|-- Nave
+    EntidadeMapa <|-- Asteroide
+    EntidadeMapa <|-- Inimigo
+
+
+%% =========================
+%% IMPLEMENTAÇÃO DE INTERFACES
+%% =========================
+
+    EntidadeMapa ..|> Posicionavel
+    Nave ..|> Movel
+    Inimigo ..|> Movel
+
+    RankingService ..|> RankingRepository
+
+
+%% =========================
+%% RELACIONAMENTOS DA MISSÃO
+%% =========================
+
+    Missao *-- Nave
+    Missao o-- Passageiro
+    Missao o-- Asteroide
+    Missao o-- Inimigo
+
+    Nave o-- Passageiro
+
+
+%% =========================
+%% RELACIONAMENTOS DO RANKING
+%% =========================
+
+    RankingRepository --> RankingEntry
+    RankingEntry --> Dificuldade
+
+
+%% =========================
+%% RELACIONAMENTOS DOS SERVIÇOS
+%% =========================
+
+    JogoService --> RankingRepository
+    JogoService --> MapaRenderer
+    MapaRenderer --> Missao
+
+    Main --> JogoService
+    Main --> RankingService
